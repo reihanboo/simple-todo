@@ -147,6 +147,7 @@ int main(int argc, char * argv[]) {
     printf("  %s add \"task description\"\n", argv[0]);
     printf("  %s list\n", argv[0]);
     printf("  %s done task_id\n", argv[0]);
+    printf("  %s archive\n", argv[0]);
     sqlite3_close(db);
     return 0;
   }
