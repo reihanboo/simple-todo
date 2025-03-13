@@ -5,24 +5,15 @@
 
 #define DB_FILE "todo.db"
 
-int main(int argc, char *argv[]) {
-    sqlite3 *db;
-    if (open_database(&db, DB_FILE) != SQLITE_OK) {
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
-        return 1;
-    }
+static void print_usage(const char *progname) {
+    printf("Usage:\n");
+    printf("  %s add \"task description\"\n", progname);
+    printf("  %s list\n", progname);
+    printf("  %s done task_id\n", progname);
+    printf("  %s archive\n", progname);
+}
 
-    create_table(db);
-
-    if (argc < 2) {
-        printf("Usage:\n");
-        printf("  %s add \"task description\"\n", argv[0]);
-        printf("  %s list\n", argv[0]);
-        printf("  %s done task_id\n", argv[0]);
-        close_database(db);
-        return 0;
-    }
-
+static void process_command(sqlite3 *db, int argc, char *argv[]) {
     if (strcmp(argv[1], "add") == 0) {
         if (argc < 3) {
             fprintf(stderr, "Please provide a task description.\n");
@@ -39,11 +30,31 @@ int main(int argc, char *argv[]) {
             mark_done(db, id);
         }
     } else if (strcmp(argv[1], "archive") == 0) {
-      tasks_archive(db);
+        tasks_archive(db);
     } else {
         fprintf(stderr, "Unknown command: %s\n", argv[1]);
+        print_usage(argv[0]);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    sqlite3 *db;
+
+    if (open_database(&db, DB_FILE) != SQLITE_OK) {
+        fprintf(stderr, "Cannot open database.\n");
+        return EXIT_FAILURE;
     }
 
+    create_table(db);
+
+    if (argc < 2) {
+        print_usage(argv[0]);
+        close_database(db);
+        return EXIT_SUCCESS;
+    }
+
+    process_command(db, argc, argv);
+
     close_database(db);
-    return 0;
+    return EXIT_SUCCESS;
 }
