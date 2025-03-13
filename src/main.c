@@ -38,6 +38,8 @@ int main(int argc, char *argv[]) {
             int id = atoi(argv[2]);
             mark_done(db, id);
         }
+    } else if (strcmp(argv[1], "archive") == 0) {
+      tasks_archive(db);
     } else {
         fprintf(stderr, "Unknown command: %s\n", argv[1]);
     }

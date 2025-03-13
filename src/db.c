@@ -82,3 +82,27 @@ void mark_done(sqlite3 *db, int id) {
     }
     sqlite3_finalize(stmt);
 }
+
+void tasks_archive(sqlite3 *db) {
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT id, description, is_done FROM tasks;";
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, 0);
+
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "Failed to prepare statement (archive): %s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+    printf("Archive of All Todos:\n");
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        int id = sqlite3_column_int(stmt, 0);
+        const unsigned char *desc = sqlite3_column_text(stmt, 1);
+        int is_done = sqlite3_column_int(stmt, 2);
+        printf("[%d] %s %s\n", id, desc, is_done ? "(done)" : "");
+    }
+
+    if (rc != SQLITE_DONE) {
+        fprintf(stderr, "Error while fetching data: %s\n", sqlite3_errmsg(db));
+    }
+    sqlite3_finalize(stmt);
+}
