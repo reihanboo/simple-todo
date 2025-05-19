@@ -18,7 +18,28 @@ static void process_command(sqlite3 *db, int argc, char *argv[]) {
         if (argc < 3) {
             fprintf(stderr, "Please provide a task description.\n");
         } else {
-            add_task(db, argv[2]);
+            // join all args above 2 into one string
+	        int total_len = 0;
+            for (int i = 2; i < argc; i++) {
+                total_len += strlen(argv[i]) + 1; // +1 for space/null terminator
+            }
+
+            char *task = malloc(total_len);
+            if (!task) {
+                fprintf(stderr, "malloc failed ?!\n");
+            }
+
+            task[0] = '\0';
+            
+            for (int i = 2; i < argc; i++) {
+                strcat(task, argv[i]);
+                if (i < argc - 1) {
+                    strcat(task, " ");
+                }
+            }
+
+            add_task(db, task);
+            free(task);
         }
     } else if (strcmp(argv[1], "list") == 0) {
         list_tasks(db);
