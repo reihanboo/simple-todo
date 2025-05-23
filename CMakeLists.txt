@@ -65,17 +65,52 @@ add_executable(tdui
 )
 
 if(WIN32)
-    # On Windows, try to use PDCurses or similar
-    find_library(CURSES_LIBRARY 
-        NAMES pdcurses curses
-        HINTS ${CMAKE_SOURCE_DIR}/lib
+    add_library(pdcurses STATIC
+        lib/PDCurses-3.9/pdcurses/addch.c
+        lib/PDCurses-3.9/pdcurses/addchstr.c
+        lib/PDCurses-3.9/pdcurses/addstr.c
+        lib/PDCurses-3.9/pdcurses/attr.c
+        lib/PDCurses-3.9/pdcurses/beep.c
+        lib/PDCurses-3.9/pdcurses/bkgd.c
+        lib/PDCurses-3.9/pdcurses/border.c
+        lib/PDCurses-3.9/pdcurses/clear.c
+        lib/PDCurses-3.9/pdcurses/color.c
+        lib/PDCurses-3.9/pdcurses/debug.c
+        lib/PDCurses-3.9/pdcurses/delch.c
+        lib/PDCurses-3.9/pdcurses/deleteln.c
+        lib/PDCurses-3.9/pdcurses/getch.c
+        lib/PDCurses-3.9/pdcurses/getstr.c
+        lib/PDCurses-3.9/pdcurses/getyx.c
+        lib/PDCurses-3.9/pdcurses/inch.c
+        lib/PDCurses-3.9/pdcurses/inchstr.c
+        lib/PDCurses-3.9/pdcurses/initscr.c
+        lib/PDCurses-3.9/pdcurses/inopts.c
+        lib/PDCurses-3.9/pdcurses/insch.c
+        lib/PDCurses-3.9/pdcurses/insstr.c
+        lib/PDCurses-3.9/pdcurses/instr.c
+        lib/PDCurses-3.9/pdcurses/kernel.c
+        lib/PDCurses-3.9/pdcurses/keyname.c
+        lib/PDCurses-3.9/pdcurses/mouse.c
+        lib/PDCurses-3.9/pdcurses/move.c
+        lib/PDCurses-3.9/pdcurses/outopts.c
+        lib/PDCurses-3.9/pdcurses/overlay.c
+        lib/PDCurses-3.9/pdcurses/pad.c
+        lib/PDCurses-3.9/pdcurses/panel.c
+        lib/PDCurses-3.9/pdcurses/printw.c
+        lib/PDCurses-3.9/pdcurses/refresh.c
+        lib/PDCurses-3.9/pdcurses/scanw.c
+        lib/PDCurses-3.9/pdcurses/scr_dump.c
+        lib/PDCurses-3.9/pdcurses/scroll.c
+        lib/PDCurses-3.9/pdcurses/slk.c
+        lib/PDCurses-3.9/pdcurses/termattr.c
+        lib/PDCurses-3.9/pdcurses/touch.c
+        lib/PDCurses-3.9/pdcurses/util.c
+        lib/PDCurses-3.9/pdcurses/window.c
     )
-    if(CURSES_LIBRARY)
-        target_link_libraries(tdui ${CURSES_LIBRARY} ${PLATFORM_LIBS})
-    else()
-        message(WARNING "No curses library found for Windows. tdui may not build.")
-        target_link_libraries(tdui ${PLATFORM_LIBS})
-    endif()
+    target_include_directories(pdcurses PUBLIC lib/PDCurses-3.9)
+    target_compile_definitions(pdcurses PRIVATE PDC_WIDE)
+    
+    target_link_libraries(tdui pdcurses ${PLATFORM_LIBS})
 else()
     # Unix/Linux
     if(NCURSES_FOUND)
